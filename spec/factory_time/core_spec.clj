@@ -4,6 +4,8 @@
 
 (deffactory :book {:author "Joe Abercrombie"})
 (deffactory :person {:name "Alex" :favorites {:food "steak" :color "red"}})
+(deffactory :full-book {:isbn "123"}
+  :extends-factory :book)
 
 (describe "factory-time.core"
   (describe "build"
@@ -19,7 +21,12 @@
       (should= {:author "Joe Abercrombie"
                 :title "The Blade Itself"}
                (build :book {:title "The Blade Itself"})))
-    
+
     (it "merges nested maps"
       (should= {:food "steak" :color "green"}
-               (:favorites (build :person {:favorites {:color "green"}}))))))
+               (:favorites (build :person {:favorites {:color "green"}}))))
+
+    (it "adds properties from parent factory"
+      (should= {:author "Joe Abercrombie"
+                :isbn "123"}
+               (build :full-book)))))
