@@ -14,5 +14,6 @@
        ([_# overrides#]
         (let [parent-builder# (if (contains? ~config :extends-factory)
                                 (partial build (:extends-factory ~config))
-                                (fn [] {}))]
-          (merge-with merge-or-replace (parent-builder#) ~base overrides#))))))
+                                (fn [] {}))
+              generate-fn# (get ~config :generate (fn [] {}))]
+          (merge-with merge-or-replace (parent-builder#) ~base (generate-fn#) overrides#))))))
