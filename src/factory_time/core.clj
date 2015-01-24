@@ -1,6 +1,8 @@
 (ns factory-time.core)
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defmulti build (fn [& args] (first args)))
+
+(defmacro deffactory [factory-name base]
+  `(defmethod build ~factory-name 
+     ([_#] (build ~factory-name {}))
+     ([_# overrides#] (merge ~base overrides#))))
