@@ -2,7 +2,12 @@
 
 (defmulti build (fn [& args] (first args)))
 
+(defn merge-or-replace [a b]
+  (if (every? map? [a b])
+    (merge a b)
+    b))
+
 (defmacro deffactory [factory-name base]
-  `(defmethod build ~factory-name 
+  `(defmethod build ~factory-name
      ([_#] (build ~factory-name {}))
-     ([_# overrides#] (merge ~base overrides#))))
+     ([_# overrides#] (merge-with merge-or-replace ~base overrides#))))
