@@ -10,8 +10,12 @@
   :extends-factory :book)
 (deffactory :generating-book {}
   :extends-factory :book
-  :generate (fn []
-              {:isbn (str (swap! isbn-count inc))}))
+  :generator-isbn str)
+(deffactory :mapped-generating-book {}
+  :extends-factory :book
+  :generator-isbn str
+  :generate (fn [gen-values]
+              {:renamed-isbn (:isbn gen-values)}))
 
 (describe "factory-time.core"
   (describe "build"
@@ -43,4 +47,8 @@
 
     (it "overrides generated properties"
       (should= "banana"
-               (:isbn (build :generating-book {:isbn "banana"}))))))
+               (:isbn (build :generating-book {:isbn "banana"}))))
+
+    (it "maps generated values"
+      (should= {:renamed-isbn "1" :author "Joe Abercrombie"}
+               (build :mapped-generating-book)))))
