@@ -2,8 +2,6 @@
   (:require [factory-time.core :refer :all]
             [speclj.core :refer :all]))
 
-(def isbn-count (atom 0))
-
 (deffactory :book {:author "Joe Abercrombie"})
 (deffactory :person {:name "Alex" :favorites {:food "steak" :color "red"}})
 (deffactory :full-book {:isbn "123"}
