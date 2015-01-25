@@ -1,8 +1,14 @@
 (ns factory-time.core)
 
-(defmulti build (fn [& args] (first args)))
+(defmulti get-factory identity)
 
-(defn merge-or-replace [a b]
+(defn build
+  ([factory-name] (build factory-name {}))
+  ([factory-name overrides]
+   (let [factory (get-factory factory-name)]
+     (.build-poop factory overrides))))
+
+(defn- merge-or-replace [a b]
   (if (every? map? [a b])
     (merge a b)
     b))
@@ -29,7 +35,7 @@
         generators (map (partial create-generator config) generator-keys)]
     (vec generators)))
 
-(defn build-generated-values [generators]
+(defn- build-generated-values [generators]
   (loop [generators generators
          acc {}]
     (if (empty? generators)
@@ -39,17 +45,28 @@
             generated-value (map-fn current-count)]
         (recur (rest generators) (assoc acc name generated-value))))))
 
+(defprotocol Builder
+  (build-poop [this overrides]))
+
+(defrecord Factory [config]
+  Builder
+  (build-poop [this overrides]
+    (let [parent-builder (if (contains? (:config this) :extends-factory)
+                           (partial build (get-in this [:config :extends-factory]))
+                           (fn [] {}))
+          generate-fn (get-in this [:config :generate] identity)
+          generated-values (build-generated-values (get-in this [:config :generators]))]
+      (merge-with merge-or-replace
+                  (parent-builder)
+                  (get-in this [:config :base])
+                  (generate-fn generated-values)
+                  overrides))))
+
 (defmacro deffactory [factory-name base & more]
-  (let [config (apply hash-map more)
-        generators-sym (gensym "generators")]
-    `(do
-       (def ~generators-sym (extract-generators ~config))
-       (defmethod build ~factory-name
-         ([_#] (build ~factory-name {}))
-         ([_# overrides#]
-          (let [parent-builder# (if (contains? ~config :extends-factory)
-                                  (partial build (:extends-factory ~config))
-                                  (fn [] {}))
-                generate-fn# (get ~config :generate identity)
-                generated-values# (build-generated-values ~generators-sym)]
-            (merge-with merge-or-replace (parent-builder#) ~base (generate-fn# generated-values#) overrides#)))))))
+  (let [config (apply hash-map more)]
+    `(let [generators# (extract-generators ~config)
+           factory-config# (merge (select-keys ~config [:extends-factory :generate])
+                               {:generators generators# :base ~base})
+           factory# (Factory. factory-config#)]
+       (defmethod get-factory ~factory-name [_#]
+         factory#))))
