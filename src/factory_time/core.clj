@@ -6,7 +6,13 @@
   ([factory-name] (build factory-name {}))
   ([factory-name overrides]
    (let [factory (get-factory factory-name)]
-     (.build-poop factory overrides))))
+     (.build-obj factory overrides))))
+
+(defn create!
+  ([factory-name] (create! factory-name {}))
+  ([factory-name overrides]
+   (let [factory (get-factory factory-name)]
+     (.create-obj! factory overrides))))
 
 (defn- merge-or-replace [a b]
   (if (every? map? [a b])
@@ -45,12 +51,13 @@
             generated-value (map-fn current-count)]
         (recur (rest generators) (assoc acc name generated-value))))))
 
-(defprotocol Builder
-  (build-poop [this overrides]))
+(defprotocol Buildable
+  (build-obj [this overrides])
+  (create-obj! [this overrides]))
 
 (defrecord Factory [config]
-  Builder
-  (build-poop [this overrides]
+  Buildable
+  (build-obj [this overrides]
     (let [parent-builder (if (contains? (:config this) :extends-factory)
                            (partial build (get-in this [:config :extends-factory]))
                            (fn [] {}))
@@ -60,12 +67,18 @@
                   (parent-builder)
                   (get-in this [:config :base])
                   (generate-fn generated-values)
-                  overrides))))
+                  overrides)))
+  (create-obj! [this overrides]
+    (if (contains? (:config this) :create!)
+      (let [create-fn (get-in this [:config :create!])
+            build-result (.build-obj this overrides)]
+        (create-fn build-result))
+      (throw (Exception. "No create! function provided")))))
 
 (defmacro deffactory [factory-name base & more]
   (let [config (apply hash-map more)]
     `(let [generators# (extract-generators ~config)
-           factory-config# (merge (select-keys ~config [:extends-factory :generate])
+           factory-config# (merge (select-keys ~config [:extends-factory :generate :create!])
                                {:generators generators# :base ~base})
            factory# (Factory. factory-config#)]
        (defmethod get-factory ~factory-name [_#]

@@ -15,6 +15,11 @@
   :generate (fn [gen-values]
               {:renamed-isbn (:isbn gen-values)}))
 
+(def saved-food (atom nil))
+(deffactory :food {:name "pie"}
+  :create! (fn [food]
+             (reset! saved-food food)))
+
 (describe "factory-time.core"
   (describe "build"
     (it "builds the base object"
@@ -49,4 +54,19 @@
 
     (it "maps generated values"
       (should= {:renamed-isbn "1" :author "Joe Abercrombie"}
-               (build :mapped-generating-book)))))
+               (build :mapped-generating-book))))
+
+  (describe "create!"
+    (with! result (create! :food))
+
+    (it "persists the food"
+      (should= {:name "pie"}
+               @saved-food))
+
+    (it "creates the object"
+      (should= {:name "pie"}
+               @result))
+
+    (it "throws an exception when create! is not defined"
+      (should-throw
+        (create! :book)))))
