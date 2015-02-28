@@ -2,6 +2,10 @@
 
 Factory time is a Clojure library for maintaining test data, similar to [Fabricator](http://www.fabricationgem.org/) is for Ruby.
 
+## Leiningen
+
+`[factory_time "0.1.0"]`
+
 ## Usage
 
 ```clojure
