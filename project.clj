@@ -1,4 +1,4 @@
-(defproject factory_time "0.1.0"
+(defproject factory-time "0.1.0"
   :description "A clojure repository inspired by factory_girl"
   :url "https://github.com/FundingCircle/factory-time"
   :license {:name "Eclipse Public License"
