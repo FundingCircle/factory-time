@@ -8,12 +8,8 @@
   :extends-factory :book)
 (deffactory :generating-book {}
   :extends-factory :book
-  :generator-isbn str)
-(deffactory :mapped-generating-book {}
-  :extends-factory :book
-  :generator-isbn str
-  :generate (fn [gen-values]
-              {:renamed-isbn (:isbn gen-values)}))
+  :generators {:isbn str
+               :title (fn [i] (str "Book " i))})
 
 (def saved-food (atom nil))
 (deffactory :food {:name "pie"}
@@ -45,16 +41,12 @@
                (build :full-book)))
 
     (it "generates properties"
-      (should= ["1" "2"]
-               (map :isbn [(build :generating-book) (build :generating-book)])))
+      (should= [{:isbn "1" :title "Book 1"} {:isbn "2" :title "Book 2"}]
+               (map #(select-keys % [:isbn :title]) [(build :generating-book) (build :generating-book)])))
 
     (it "overrides generated properties"
       (should= "banana"
-               (:isbn (build :generating-book {:isbn "banana"}))))
-
-    (it "maps generated values"
-      (should= {:renamed-isbn "1" :author "Joe Abercrombie"}
-               (build :mapped-generating-book))))
+               (:isbn (build :generating-book {:isbn "banana"})))))
 
   (describe "create!"
     (with! result (create! :food))

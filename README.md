@@ -4,7 +4,7 @@ Factory time is a Clojure library for maintaining test data, similar to [Fabrica
 
 ## Leiningen
 
-`[factory-time "0.1.0"]`
+`[factory-time "0.1.1"]`
 
 ## Usage
 
@@ -12,7 +12,7 @@ Factory time is a Clojure library for maintaining test data, similar to [Fabrica
 (deffactory :parent {:name "Billy Joe", :age 42})
 (deffactory :child {:age 12}
   :extends-factory :parent
-  :generator-annoying (fn [n] (even? n) # n starts at 1 and will increase by 1 every time function is called
+  :generators {:annoying (fn [n] (even? n)} # n starts at 1 and will increase by 1 every time function is called
   :create! save-child!)
 
 # First call (n = 1)

@@ -19,37 +19,12 @@
     (merge a b)
     b))
 
-(defn- generate-key? [key]
-  (-> key
-    name
-    (.startsWith "generator-")))
-
-(defn- get-name [key]
-  (->> key
-    name
-    (drop 10) ; 'generator-' is 10 chars
-    clojure.string/join
-    keyword))
-
-(defn- create-generator [config key]
-  {:name (get-name key)
-   :counter (atom 0)
-   :map-fn (key config)})
-
-(defn extract-generators [config]
-  (let [generator-keys (filter generate-key? (keys config))
-        generators (map (partial create-generator config) generator-keys)]
-    (vec generators)))
-
-(defn- build-generated-values [generators]
-  (loop [generators generators
-         acc {}]
-    (if (empty? generators)
-      acc
-      (let [{:keys [name counter map-fn]} (first generators)
-            current-count (swap! counter inc)
-            generated-value (map-fn current-count)]
-        (recur (rest generators) (assoc acc name generated-value))))))
+(defn- build-generated-values [counter generators]
+  (let [n (swap! counter inc)]
+    (reduce (fn [acc [prop-name map-fn]]
+              (merge acc {prop-name (map-fn n)}))
+            {}
+            generators)))
 
 (defprotocol Buildable
   (build-obj [this overrides])
@@ -61,12 +36,12 @@
     (let [parent-builder (if (contains? (:config this) :extends-factory)
                            (partial build (get-in this [:config :extends-factory]))
                            (fn [] {}))
-          generate-fn (get-in this [:config :generate] identity)
-          generated-values (build-generated-values (get-in this [:config :generators]))]
+          generated-values (build-generated-values (get-in this [:config :counter])
+                                                   (get-in this [:config :generators] {}))]
       (merge-with merge-or-replace
                   (parent-builder)
                   (get-in this [:config :base])
-                  (generate-fn generated-values)
+                  generated-values
                   overrides)))
   (create-obj! [this overrides]
     (if (contains? (:config this) :create!)
@@ -77,9 +52,11 @@
 
 (defmacro deffactory [factory-name base & more]
   (let [config (apply hash-map more)]
-    `(let [generators# (extract-generators ~config)
-           factory-config# (merge (select-keys ~config [:extends-factory :generate :create!])
-                               {:generators generators# :base ~base})
+    `(let [generators# (get ~config :generators {})
+           counter# (atom 0)
+           factory-config# (merge (select-keys ~config [:extends-factory :generators :create!])
+                               {:base ~base
+                                :counter counter#})
            factory# (Factory. factory-config#)]
        (defmethod get-factory ~factory-name [_#]
          factory#))))
