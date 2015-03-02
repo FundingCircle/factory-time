@@ -39,7 +39,7 @@ A Factory Time merges data in the following order, from lowest to highest preced
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2015 Funding Circle
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
