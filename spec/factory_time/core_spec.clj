@@ -1,6 +1,6 @@
 (ns factory-time.core-spec
   (:require [factory-time.core :refer :all]
-            [speclj.core :refer :all]))
+            [speclj.core :refer :all] speclj.run.standard))
 
 (deffactory :book {:author "Joe Abercrombie"})
 (deffactory :person {:name "Alex" :favorites {:food "steak" :color "red"}})
