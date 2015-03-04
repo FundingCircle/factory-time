@@ -33,13 +33,12 @@ Factory time is a Clojure library for maintaining test data, similar to [Fabrica
 A Factory Time merges data in the following order, from lowest to highest precedence:
 
 1. Parent factory result
-2. Factory defaults
-3. Generated values
-4. create! result (skipped when ```build``` is called)
+1. Factory defaults
+1. Generated values
+1. create! result (skipped when ```build``` is called)
 
 ## License
 
 Copyright © 2015 Funding Circle
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the BSD 3-Clause License.
