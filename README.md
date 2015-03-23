@@ -1,6 +1,6 @@
 # Factory Time
 
-Factory time is a Clojure library for maintaining test data, similar to [Fabricator](http://www.fabricationgem.org/) for Ruby.
+Factory Time is a Clojure library for maintaining test data, similar to [Fabricator](http://www.fabricationgem.org/) for Ruby. Read more about the motivation for Factor Time on our [blog](https://engineering.fundingcircle.com/blog/2015/03/21/factory-time/).
 
 ## Leiningen
 
