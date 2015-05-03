@@ -17,6 +17,12 @@
   :create! (fn [food]
              (reset! saved-food food)))
 
+(describe "factory-time.with-ids"
+  (describe "with-ids"
+    (= (with-ids [1] [author]
+         {:author author})
+       {:author 1})))
+
 (describe "factory-time.core"
   (describe "build"
     (it "builds the base object"

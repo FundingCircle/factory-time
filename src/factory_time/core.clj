@@ -60,3 +60,21 @@
            factory# (Factory. factory-config#)]
        (defmethod get-factory ~factory-name [_#]
          factory#))))
+
+(defmacro with-ids [seqable id-vars & body]
+  "Generate named identities
+
+   Intended to help link together related entities. For example, to associate multiple
+   book entities with their author, one could use:
+
+   ```
+   (with-ids [[1] author]
+     (build :author {:id author :name \"Irvine Welsh\"})
+     (build :book {:author author :name \"Trainspotting\"})
+     (build :book {:author author :name \"Acid House\"}))
+   ```
+
+   This makes it easier to specify groups of related entities to be used together in
+   fixtures."
+  `(let ~(into [] (apply concat (map vector id-vars seqable)))
+     ~@body))
