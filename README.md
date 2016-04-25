@@ -4,7 +4,7 @@ Factory Time is a Clojure library for maintaining test data, similar to [Fabrica
 
 ## Leiningen
 
-`[factory-time "0.1.1"]`
+`[factory-time "0.1.2"]`
 
 ## Usage
 
