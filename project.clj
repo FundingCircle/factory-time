@@ -1,5 +1,5 @@
 (defproject factory-time "0.1.2"
-  :description "A clojure repository inspired by factory_girl"
+  :description "A Clojure library inspired by factory_girl"
   :url "https://github.com/FundingCircle/factory-time"
   :license {:name "BSD 3-clause"
             :url "http://opensource.org/licenses/BSD-3-Clause"}
