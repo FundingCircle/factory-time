@@ -1,10 +1,13 @@
 # Factory Time
+[![Circle CI](https://circleci.com/gh/FundingCircle/factory-time/tree/master.svg?style=svg)](https://circleci.com/gh/FundingCircle/factory-time/tree/master)
+[![Downloads](https://jarkeeper.com/FundingCircle/factory-time/downloads.svg)](https://jarkeeper.com/FundingCircle/factory-time)
+[![Dependencies Status](https://jarkeeper.com/FundingCircle/factory-time/status.svg)](https://jarkeeper.com/FundingCircle/factory-time)
 
 Factory Time is a Clojure library for maintaining test data, similar to [Fabricator](http://www.fabricationgem.org/) for Ruby. Read more about the motivation for Factory Time on our [blog](https://engineering.fundingcircle.com/blog/2015/03/21/factory-time/).
 
 ## Leiningen
 
-`[factory-time "0.1.1"]`
+`[factory-time "0.1.2"]`
 
 ## Usage
 
