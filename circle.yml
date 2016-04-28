@@ -1,3 +1,12 @@
 test:
   override:
     - lein spec
+
+deployment:
+  clojars:
+    branch: master
+    owner: FundingCircle
+    commands:
+      - git config --global user.email "circleci@circleci.com"
+      - git config --global user.name "CircleCI"
+      - lein do deploy, vcs tag --no-sign :prefix "v", vcs push
