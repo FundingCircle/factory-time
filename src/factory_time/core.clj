@@ -26,6 +26,13 @@
             {}
             generators)))
 
+(defn- parent-factories [factory]
+  (if-let [parent-factory-name (get-in factory [:config :extends-factory])]
+    (let [parent-factory (get-factory parent-factory-name)]
+      (cons parent-factory
+            (lazy-seq (parent-factories parent-factory))))
+    nil))
+
 (defprotocol Buildable
   (build-obj [this overrides])
   (create-obj! [this overrides]))
@@ -44,11 +51,14 @@
                   generated-values
                   overrides)))
   (create-obj! [this overrides]
-    (if (contains? (:config this) :create!)
-      (let [create-fn (get-in this [:config :create!])
-            build-result (.build-obj this overrides)]
-        (create-fn build-result))
-      (throw (Exception. "No create! function provided")))))
+    (let [create-fn (or (get-in this [:config :create!])
+                        (->> (parent-factories this)
+                             (map #(get-in % [:config :create!]))
+                             (filter fn?)
+                             (first))
+                        (throw (Exception. "No create! function provided")))
+          build-result (.build-obj this overrides)]
+      (create-fn build-result))))
 
 (defmacro deffactory [factory-name base & more]
   (let [config (apply hash-map more)]

@@ -17,6 +17,9 @@
   :create! (fn [food]
              (reset! saved-food food)))
 
+(deffactory :cold-food {:cold true}
+  :extends-factory :food)
+
 (describe "factory-time.core"
   (describe "build"
     (it "builds the base object"
@@ -50,16 +53,26 @@
                (:isbn (build :generating-book {:isbn "banana"})))))
 
   (describe "create!"
-    (with! result (create! :food))
-
-    (it "persists the food"
-      (should= {:name "pie"}
-               @saved-food))
+    (with result (create! :food))
 
     (it "creates the object"
       (should= {:name "pie"}
                @result))
+    (it "persists the food"
+      (should= {:name "pie"}
+               @saved-food))
+
+    (describe "from :extends-factory"
+      (with result (create! :cold-food))
+
+      (it "creates the object"
+        (should= {:name "pie" :cold true}
+                 @result))
+
+      (it "persists the food"
+        (should= {:name "pie" :cold true}
+                 @saved-food)))
 
     (it "throws an exception when create! is not defined"
       (should-throw
-        (create! :book)))))
+       (create! :book)))))
