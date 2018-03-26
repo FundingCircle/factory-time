@@ -1,4 +1,5 @@
-(ns factory-time.core)
+(ns factory-time.core
+  (:require [meta-merge.core :as meta-merge]))
 
 (defmulti get-factory identity)
 
@@ -13,11 +14,6 @@
   ([factory-name overrides]
    (let [factory (get-factory factory-name)]
      (.create-obj! factory overrides))))
-
-(defn- merge-or-replace [a b]
-  (if (every? map? [a b])
-    (merge a b)
-    b))
 
 (defn- build-generated-values [counter generators]
   (let [n (swap! counter inc)]
@@ -38,7 +34,7 @@
                            (fn [] {}))
           generated-values (build-generated-values (get-in this [:config :counter])
                                                    (get-in this [:config :generators] {}))]
-      (merge-with merge-or-replace
+      (meta-merge/meta-merge
                   (parent-builder)
                   (get-in this [:config :base])
                   generated-values

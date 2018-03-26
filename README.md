@@ -44,6 +44,20 @@ Factory Time is a Clojure library for maintaining test data, similar to [Fabrica
                                        ;  :hair-color "black"}
 ```
 
+The key overrides strategy can be customized with [meta-merge](https://github.com/weavejester/meta-merge).
+
+```clojure
+(deffactory :person {:name "Alex" :favorites {:food "steak" :color "red"}})
+
+;; By default, merges maps
+(build :person {:favorites {:color "green"}})  
+;; {:name "Alex" :favorites {:food "steak" :color "green"}}
+
+;; With ^:replace
+(build :person {:favorites ^:replace {:color "green"}}) 
+;; {:name "Alex" :favorites {:color "green"}}
+```
+
 Factory Time merges data in the following order, from lowest to highest precedence:
 
 1. Parent factory result
@@ -51,6 +65,7 @@ Factory Time merges data in the following order, from lowest to highest preceden
 1. Generated values
 1. Build overrides
 1. create! result (skipped when `build` is called)
+
 
 ## License
 

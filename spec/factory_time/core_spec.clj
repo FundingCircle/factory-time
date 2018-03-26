@@ -36,6 +36,10 @@
       (should= {:food "steak" :color "green"}
                (:favorites (build :person {:favorites {:color "green"}}))))
 
+    (it "replaces nested maps with meta"
+        (should= {:color "green"}
+                 (:favorites (build :person {:favorites ^:replace {:color "green"}}))))
+
     (it "adds properties from parent factory"
       (should= {:author "Joe Abercrombie"
                 :isbn "123"}
